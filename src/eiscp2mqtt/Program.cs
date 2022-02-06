@@ -14,7 +14,7 @@ string mqttPassword = null;
 string mqttPrefix = "eiscp";
 bool showHelp = false;
 var hosts = new List<string>();
-var clients = new Dictionary<string, RawClient>();
+var clients = new Dictionary<string, EiscpClient>();
 var options = new OptionSet
 {
     {"m|mqttServer=", "MQTT Server", x => mqttHost = x},
@@ -102,9 +102,10 @@ async Task RunConnectionAsync(IMqttClient mqttClient,string hostname, Cancellati
     {
         try
         {
-            using (var client = new RawClient(hostname))
+            using (var client = new EiscpClient(hostname))
             {
                 client.RawCommand += (s, e) => OnRawCommand(mqttClient, $"{mqttPrefix}/{hostname}/raw", e.Command);
+                client.EiscpCommand += (s, e) => OnEiscpCommand(mqttClient, hostname, e);
                 await client.ConnectAsync(cancellationToken);
                 clients[hostname] = client;
                 
@@ -119,6 +120,12 @@ async Task RunConnectionAsync(IMqttClient mqttClient,string hostname, Cancellati
         await PublishAsync(mqttClient, $"{mqttPrefix}/{hostname}/state", "disconnected", cancellationToken);
         await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
     }
+}
+
+void OnEiscpCommand(IMqttClient mqttClient, string hostname, EiscpCommandEventArgs e)
+{
+    var topic = $"{mqttPrefix}/{hostname}/{e.Zone.ToString().ToLowerInvariant()}/{e.Command}";
+    PublishAsync(mqttClient, topic, e.Parameter, CancellationToken.None);
 }
 
 void OnRawCommand(IMqttClient mqttClient, string topic, string command)
