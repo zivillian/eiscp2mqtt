@@ -104,11 +104,15 @@ namespace eiscp_command_generator
                 .AppendLine("\t\t///<inheritdoc/>")
                 .AppendLine("\t\tpublic override EiscpCommandArgument[] Arguments => new EiscpCommandArgument[]")
                 .AppendLine("\t\t{");
+            var hasNumericArgument = false;
             foreach (var command in description.Values)
             {
                 if (command.Key is List<object> keys)
                 {
-                    //TODO find a generic way to implement the ranges from yaml
+                    if (keys.All(x => Int64.TryParse(x.ToString(), out _)))
+                    {
+                        hasNumericArgument = true;
+                    }
                     continue;
                 }
                 sb.Append("\t\t\tnew EiscpCommandArgument { Eiscp = \"")
@@ -120,8 +124,14 @@ namespace eiscp_command_generator
                 }
                 sb.AppendLine(" } },");
             }
-            sb.AppendLine("\t\t};")
-                .AppendLine("\t}")
+            sb.AppendLine("\t\t};");
+            if (hasNumericArgument)
+            {
+                sb.AppendLine()
+                    .AppendLine("\t\t///<inheritdoc/>")
+                    .AppendLine("\t\tpublic override bool HasNumericArgument => true;");
+            }
+            sb.AppendLine("\t}")
                 .AppendLine("}");
             return sb.ToString();
         }

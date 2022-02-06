@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 
 namespace eiscp;
@@ -33,6 +34,11 @@ public abstract class EiscpCommandBase
     /// <summary>
     /// TODO
     /// </summary>
+    public virtual bool HasNumericArgument { get; } = false;
+
+    /// <summary>
+    /// TODO
+    /// </summary>
     public bool TryGetArgument(string eiscp, out EiscpCommandArgument arg)
     {
         arg = null;
@@ -52,6 +58,20 @@ public abstract class EiscpCommandBase
 
     protected virtual bool TryGetCustomArgument(string eiscp, out EiscpCommandArgument arg)
     {
+        if (HasNumericArgument)
+        {
+            if (Byte.TryParse(eiscp.AsSpan(3), NumberStyles.HexNumber, null, out var value))
+            {
+                arg = new EiscpCommandArgument
+                {
+                    Name = new[]
+                    {
+                        value.ToString()
+                    }
+                };
+                return true;
+            }
+        }
         arg = null;
         return false;
     }
@@ -71,6 +91,14 @@ public abstract class EiscpCommandBase
 
     protected virtual bool TryTranslateCustomToEiscp(string argument, out string eiscp)
     {
+        if (HasNumericArgument)
+        {
+            if (Byte.TryParse(argument, out var value))
+            {
+                eiscp = Eiscp + value.ToString("X2");
+                return true;
+            }
+        }
         eiscp = null;
         return false;
     }
