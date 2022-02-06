@@ -46,6 +46,12 @@ public abstract class EiscpCommandBase
                 return true;
             }
         }
+        return TryGetCustomArgument(eiscp, out arg);
+    }
+
+    protected virtual bool TryGetCustomArgument(string eiscp, out EiscpCommandArgument arg)
+    {
+        arg = null;
         return false;
     }
 }
