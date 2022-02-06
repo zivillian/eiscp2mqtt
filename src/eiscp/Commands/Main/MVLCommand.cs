@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace eiscp.Commands.Main;
 
@@ -8,7 +9,7 @@ public partial class MVLCommand
     {
         if (Byte.TryParse(argument, out var value))
         {
-            eiscp = Eiscp + argument;
+            eiscp = Eiscp + value.ToString("X2");
             return true;
         }
         return base.TryTranslateCustomToEiscp(argument, out eiscp);
@@ -16,7 +17,7 @@ public partial class MVLCommand
 
     protected override bool TryGetCustomArgument(string eiscp, out EiscpCommandArgument arg)
     {
-        if (byte.TryParse(eiscp.AsSpan(3), out var value))
+        if (Byte.TryParse(eiscp.AsSpan(3), NumberStyles.HexNumber, null, out var value))
         {
             arg = new EiscpCommandArgument
             {
