@@ -15,6 +15,7 @@ string mqttPrefix = "eiscp";
 bool showHelp = false;
 var hosts = new List<string>();
 var clients = new Dictionary<string, EiscpClient>();
+bool debug = false;
 var options = new OptionSet
 {
     {"m|mqttServer=", "MQTT Server", x => mqttHost = x},
@@ -22,6 +23,7 @@ var options = new OptionSet
     {"mqttpass=", "MQTT password", x => mqttPassword = x},
     {"host=", "Receiver hostname or ip", x => hosts.Add(x)},
     {"p|prefix=", $"MQTT topic prefix - defaults to {mqttPrefix}", x => mqttPrefix = x.TrimEnd('/')},
+    {"d|debug", "enable debug logging", x => debug = x != null},
     {"h|help", "show help", x => showHelp = x != null},
 };
 try
@@ -97,13 +99,17 @@ async Task RunConnectionAsync(IMqttClient mqttClient,string hostname, Cancellati
             new MqttTopicFilter{Topic = $"{mqttPrefix}/{hostname}"}
         }
     };
-    var foo =await mqttClient.SubscribeAsync(subscription, cancellationToken);
+    await mqttClient.SubscribeAsync(subscription, cancellationToken);
     while (!cancellationToken.IsCancellationRequested)
     {
         try
         {
             using (var client = new EiscpClient(hostname))
             {
+                if (debug)
+                {
+                    client.Debug += (s, e) => Console.Error.WriteLine($"{hostname}: {(e.Send ? '>' : '<')} {e.Command}");
+                }
                 client.RawCommand += (s, e) => OnRawCommand(mqttClient, $"{mqttPrefix}/{hostname}/raw", e.Command);
                 client.EiscpCommand += (s, e) => OnEiscpCommand(mqttClient, hostname, e);
                 await client.ConnectAsync(cancellationToken);
@@ -146,6 +152,8 @@ async Task MqttMessageReceived(MqttApplicationMessageReceivedEventArgs args, Can
     if (clients.TryGetValue(host, out var client))
     {
         var command = Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
+        if (debug)
+            Console.Error.WriteLine($"Received '{command}' on '{args.ApplicationMessage.Topic}'");
         await client.SendCommandAsync(command, cancellationToken);
     }
 

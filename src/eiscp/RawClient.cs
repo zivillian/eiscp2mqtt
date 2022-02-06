@@ -29,6 +29,8 @@ public class RawClient:IDisposable
 
     public event EventHandler<RawCommandEventArgs> RawCommand;
 
+    public event EventHandler<DebugEventArgs> Debug;
+
     public ValueTask ConnectAsync(CancellationToken cancellationToken)
     {
         return _client.ConnectAsync(_hostname, 60128, cancellationToken);
@@ -50,18 +52,22 @@ public class RawClient:IDisposable
         1, 0, 0, 0,
         (byte)'!',(byte)'1' };
 
-    private static readonly byte[] _sendNewline = { (byte)'\n' };
+    private static readonly byte[] _sendNewline = { (byte)'\r',(byte)'\n' };
     public virtual async Task SendCommandAsync(string command, CancellationToken cancellationToken)
     {
         try
         {
+            var length = Encoding.UTF8.GetByteCount(command) + 4;
+            var packet = new byte[length - 4 + _sendHeader.Length + _sendNewline.Length];
+            _sendHeader.CopyTo(packet.AsSpan());
+            BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(8), (uint)length);
+            Encoding.UTF8.GetBytes(command).CopyTo(packet.AsSpan(18));
+            _sendNewline.CopyTo(packet.AsSpan(packet.Length - _sendNewline.Length));
+
             await _writeLock.WaitAsync(cancellationToken);
-            var length = Encoding.UTF8.GetByteCount(command) + 3;
-            BinaryPrimitives.WriteUInt32BigEndian(_sendHeader.AsSpan(8), (uint)length);
+            OnDebugSend(command);
             var stream = _client.GetStream();
-            await stream.WriteAsync(_sendHeader.AsMemory(), cancellationToken);
-            await stream.WriteAsync(Encoding.UTF8.GetBytes(command), cancellationToken);
-            await stream.WriteAsync(_sendNewline, cancellationToken);
+            await stream.WriteAsync(packet.AsMemory(), cancellationToken);
         }
         finally
         {
@@ -119,6 +125,7 @@ public class RawClient:IDisposable
                     if (buffer.Length < length + headerSize) break;
                     var payloadBuffer = buffer.Slice(headerSize, length);
                     var payload = Encoding.UTF8.GetString(payloadBuffer);
+                    OnDebugReceive(payload);
                     OnRawCommand(payload);
                     buffer = buffer.Slice(payloadBuffer.End);
 
@@ -176,7 +183,7 @@ public class RawClient:IDisposable
         var eof = command.IndexOf('\x1a');
         if (eof < 0)
         {
-            //TX-LD20 sends '!1TUN\r\n' when switching to tuner
+            //TX-L20D sends '!1TUN\r\n' when switching to tuner
             command = command.Substring(2).TrimEnd();
         }
         else
@@ -201,5 +208,15 @@ public class RawClient:IDisposable
     {
         Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    protected virtual void OnDebugSend(string command)
+    {
+        Debug?.Invoke(this, new DebugEventArgs{Command = command, Send = true});
+    }
+
+    protected virtual void OnDebugReceive(string command)
+    {
+        Debug?.Invoke(this, new DebugEventArgs{Command = command, Send = false});
     }
 }
