@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace eiscp;
 
@@ -52,6 +53,25 @@ public abstract class EiscpCommandBase
     protected virtual bool TryGetCustomArgument(string eiscp, out EiscpCommandArgument arg)
     {
         arg = null;
+        return false;
+    }
+
+    public bool TryTranslateToEiscp(string argument, out string eiscp)
+    {
+        foreach (var arg in Arguments)
+        {
+            if (arg.Name.Any(x => x.Equals(argument, StringComparison.OrdinalIgnoreCase)))
+            {
+                eiscp = Eiscp + arg.Eiscp;
+                return true;
+            }
+        }
+        return TryTranslateCustomToEiscp(argument, out eiscp);
+    }
+
+    protected virtual bool TryTranslateCustomToEiscp(string argument, out string eiscp)
+    {
+        eiscp = null;
         return false;
     }
 }

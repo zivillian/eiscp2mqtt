@@ -102,10 +102,15 @@ namespace eiscp_command_generator
                 .Append("\t\tpublic override EiscpZone Zone => EiscpZone.").Append(folder.Casing()).AppendLine(";")
                 .AppendLine()
                 .AppendLine("\t\t///<inheritdoc/>")
-                .AppendLine("\t\tpublic override EiscpCommandArgument[] Arguments => new[]")
+                .AppendLine("\t\tpublic override EiscpCommandArgument[] Arguments => new EiscpCommandArgument[]")
                 .AppendLine("\t\t{");
             foreach (var command in description.Values)
             {
+                if (command.Key is List<object> keys)
+                {
+                    //TODO find a generic way to implement the ranges from yaml
+                    continue;
+                }
                 sb.Append("\t\t\tnew EiscpCommandArgument { Eiscp = \"")
                     .Append(command.Key)
                     .Append("\", Name = new string[] {");

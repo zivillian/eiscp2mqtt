@@ -50,14 +50,13 @@ public partial class CommandRegistry
         }
         query = query.Where(x => x.Name.Equals(parts[offset], StringComparison.OrdinalIgnoreCase) ||
                                  x.Aliases.Any(a => a.Equals(parts[offset], StringComparison.OrdinalIgnoreCase)));
-        foreach (var eiscp in query)
+
+        var argument = parts[offset + 1];
+        foreach (var eiscpCommand in query)
         {
-            foreach (var argument in eiscp.Arguments)
+            if (eiscpCommand.TryTranslateToEiscp(argument, out var eiscp))
             {
-                if (argument.Name.Any(x => x.Equals(parts[offset + 1], StringComparison.OrdinalIgnoreCase)))
-                {
-                    return eiscp.Eiscp + argument.Eiscp;
-                }
+                return eiscp;
             }
         }
         return command;
