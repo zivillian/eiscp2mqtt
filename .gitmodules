@@ -1,0 +1,3 @@
+[submodule "lib/onkyo-eiscp"]
+	path = lib/onkyo-eiscp
+	url = https://github.com/miracle2k/onkyo-eiscp

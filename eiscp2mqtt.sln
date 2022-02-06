@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eiscp2mqtt", "src\eiscp2mqtt\eiscp2mqtt.csproj", "{306FB2A7-AE3F-4614-9A33-7D47B8AB775F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eiscp", "src\eiscp\eiscp.csproj", "{7D83DBEE-092A-43CD-9DE5-1C0C3305F62D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eiscp.test", "src\eiscp.test\eiscp.test.csproj", "{4095753F-E791-47F9-866B-4E3332084FAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{306FB2A7-AE3F-4614-9A33-7D47B8AB775F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306FB2A7-AE3F-4614-9A33-7D47B8AB775F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306FB2A7-AE3F-4614-9A33-7D47B8AB775F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306FB2A7-AE3F-4614-9A33-7D47B8AB775F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D83DBEE-092A-43CD-9DE5-1C0C3305F62D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D83DBEE-092A-43CD-9DE5-1C0C3305F62D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D83DBEE-092A-43CD-9DE5-1C0C3305F62D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D83DBEE-092A-43CD-9DE5-1C0C3305F62D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4095753F-E791-47F9-866B-4E3332084FAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4095753F-E791-47F9-866B-4E3332084FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4095753F-E791-47F9-866B-4E3332084FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4095753F-E791-47F9-866B-4E3332084FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C6F524BD-F3C1-4BA4-8AF3-127830B58A1C}
+	EndGlobalSection
+EndGlobal
