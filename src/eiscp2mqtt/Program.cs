@@ -135,6 +135,7 @@ void OnRawCommand(IMqttClient mqttClient, string topic, string command)
 
 async Task MqttMessageReceived(MqttApplicationMessageReceivedEventArgs args, CancellationToken cancellationToken)
 {
+    if (args.ApplicationMessage.Payload is null) return;
     var topic = args.ApplicationMessage.Topic.Substring(mqttPrefix.Length + 1);
     var host = topic;
     var index = host.IndexOf('/');

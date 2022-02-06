@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using eiscp.Commands;
 
 namespace eiscp;
 
-public class CommandRegistry
+public partial class CommandRegistry
 {
-    private readonly IList<IEiscpCommand> _commands = new List<IEiscpCommand>();
+    private readonly IList<EiscpCommandBase> _commands = new List<EiscpCommandBase>();
 
     public CommandRegistry()
     {
-        _commands.Add(new PwrCommand());
+        RegisterCommands();
     }
 
-    public bool TryGetEiscp(string eiscp, out IEiscpCommand command)
+    partial void RegisterCommands();
+
+    public bool TryGetEiscp(string eiscp, out EiscpCommandBase command)
     {
         var group = eiscp.Substring(0, 3);
         command = _commands.Where(x => x.Eiscp == group)
@@ -27,7 +30,7 @@ public class CommandRegistry
     {
         var parts = command.Split(CommandSeparator,
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        IEnumerable<IEiscpCommand> query = _commands;
+        IEnumerable<EiscpCommandBase> query = _commands;
         int offset = 0;
         if (parts.Length == 3)
         {
