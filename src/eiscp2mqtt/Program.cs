@@ -161,6 +161,11 @@ async Task MqttMessageReceived(MqttApplicationMessageReceivedEventArgs args, Can
 
 static Task PublishAsync(IMqttClient client, string topic, string message, CancellationToken cancellationToken)
 {
+    if (!client.IsConnected)
+    {
+        Console.Error.WriteLine($"MQTT disconnected - dropping '{topic}': '{message}'");
+        return Task.CompletedTask;
+    }
     var payload = new MqttApplicationMessageBuilder()
         .WithTopic(topic)
         .WithPayload(message)
