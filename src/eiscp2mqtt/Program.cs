@@ -35,9 +35,9 @@ try
 }
 catch (OptionException ex)
 {
-    Console.Error.Write("ism7mqtt: ");
+    Console.Error.Write("eiscp2mqtt: ");
     Console.Error.WriteLine(ex.Message);
-    Console.Error.WriteLine("Try 'ism7mqtt --help' for more information");
+    Console.Error.WriteLine("Try 'eiscp2mqtt --help' for more information");
     return;
 }
 if (showHelp || mqttHost is null || hosts.Count == 0)
@@ -50,6 +50,7 @@ using (var cts = new CancellationTokenSource())
     Console.CancelKeyPress += (s, e) =>
     {
         cts.Cancel();
+        e.Cancel = true;
     };
     using (var mqttClient = new MqttFactory().CreateMqttClient())
     {
