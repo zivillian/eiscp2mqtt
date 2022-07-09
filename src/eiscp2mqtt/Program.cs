@@ -16,6 +16,7 @@ bool showHelp = false;
 var hosts = new List<string>();
 var clients = new Dictionary<string, EiscpClient>();
 bool debug = false;
+var subscriptions = new List<MqttTopicFilter>();
 var options = new OptionSet
 {
     {"m|mqttServer=", "MQTT Server", x => mqttHost = x},
@@ -69,6 +70,7 @@ using (var cts = new CancellationTokenSource())
             try
             {
                 await mqttClient.ConnectAsync(mqttOptions, cts.Token);
+                await mqttClient.SubscribeAsync(new MqttClientSubscribeOptions { TopicFilters = subscriptions }, cts.Token);
             }
             catch
             {
@@ -100,6 +102,7 @@ async Task RunConnectionAsync(IMqttClient mqttClient,string hostname, Cancellati
             new MqttTopicFilter{Topic = $"{mqttPrefix}/{hostname}"}
         }
     };
+    subscriptions.AddRange(subscription.TopicFilters);
     await mqttClient.SubscribeAsync(subscription, cancellationToken);
     while (!cancellationToken.IsCancellationRequested)
     {
