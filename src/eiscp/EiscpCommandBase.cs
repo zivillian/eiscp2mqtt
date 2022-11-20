@@ -6,39 +6,18 @@ namespace eiscp;
 
 public abstract class EiscpCommandBase
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
     public abstract string Name { get; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public abstract string[] Aliases { get; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public abstract string Eiscp { get; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public abstract EiscpZone Zone { get; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public abstract EiscpCommandArgument[] Arguments { get; }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public virtual bool HasNumericArgument { get; } = false;
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public bool TryGetArgument(string eiscp, out EiscpCommandArgument arg)
     {
         arg = null;

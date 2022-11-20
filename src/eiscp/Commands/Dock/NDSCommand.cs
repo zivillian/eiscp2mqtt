@@ -2,6 +2,7 @@
 {
     public partial class NDSCommand
     {
+        /// <inheritdoc />
         protected override bool TryGetCustomArgument(string eiscp, out EiscpCommandArgument arg)
         {
             if (eiscp.Length == 6)
