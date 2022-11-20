@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.ComponentModel;
+using System.Net;
 using System.Text;
 using eiscp;
 using Mono.Options;
@@ -62,7 +63,8 @@ using (var cts = new CancellationTokenSource())
     {
         var mqttOptionBuilder = new MqttClientOptionsBuilder()
             .WithTcpServer(mqttHost)
-            .WithClientId($"eiscp2mqtt");
+            .WithClientId(GetEnvBool("DOTNET_RUNNING_IN_CONTAINER") ? Dns.GetHostName() : "eiscp2mqtt");
+
         if (!String.IsNullOrEmpty(mqttUsername) || !String.IsNullOrEmpty(mqttPassword))
         {
             mqttOptionBuilder = mqttOptionBuilder.WithCredentials(mqttUsername, mqttPassword);
