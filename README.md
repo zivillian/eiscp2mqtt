@@ -19,3 +19,11 @@ All events received are published via mqtt at `<prefix>/<host>/<zone>/<command>`
 ```sh
 mosquitto_pub -t 'eiscp/onkyo.local' -m 'master-volume query'
 ```
+
+### Docker
+
+If you want to run this via docker, use:
+
+```sh
+docker run -d --restart=unless-stopped -e MQTTHOST=<mqttserver> -e HOST=<receiverip> zivillian/eiscp2mqtt:latest
+```
