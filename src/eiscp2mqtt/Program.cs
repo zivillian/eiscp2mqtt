@@ -10,8 +10,8 @@ using MQTTnet.Client;
 using MQTTnet.Packets;
 
 string mqttHost = GetEnvString("MQTTHOST");
-string mqttUsername = GetEnvString("MQTTHOST");
-string mqttPassword = GetEnvString("MQTTHOST");
+string mqttUsername = GetEnvString("MQTTUSERNAME");
+string mqttPassword = GetEnvString("MQTTPASSWORD");
 string mqttPrefix = GetEnvString("MQTTPREFIX", "eiscp");
 bool showHelp = false;
 var hosts = new List<string>();
