@@ -22,11 +22,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Publish Windows
-      run: dotnet publish -c release -r win-x64 -p:PublishTrimmed=True --sc -nowarn:IL2026,IL2104
+      run: dotnet publish -c release -r win-x64 --sc -nowarn:IL2026,IL2104
     - name: Publish Linux
-      run: dotnet publish -c release -r linux-x64 -p:PublishTrimmed=True --sc -nowarn:IL2026,IL2104
+      run: dotnet publish -c release -r linux-x64 --sc -nowarn:IL2026,IL2104
     - name: Publish Linux ARM
-      run: dotnet publish -c release -r linux-arm -p:PublishTrimmed=True --sc -nowarn:IL2026,IL2104
+      run: dotnet publish -c release -r linux-arm --sc -nowarn:IL2026,IL2104
     - uses: actions/upload-artifact@v2
       with:
         name: eiscp2mqtt-win-x64
