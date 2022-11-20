@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.ComponentModel;
 using System.Text;
 using eiscp;
 using Mono.Options;
@@ -7,14 +8,19 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Packets;
 
-string mqttHost = null;
-string mqttUsername = null;
-string mqttPassword = null;
-string mqttPrefix = "eiscp";
+string mqttHost = GetEnvString("MQTTHOST");
+string mqttUsername = GetEnvString("MQTTHOST");
+string mqttPassword = GetEnvString("MQTTHOST");
+string mqttPrefix = GetEnvString("MQTTPREFIX", "eiscp");
 bool showHelp = false;
 var hosts = new List<string>();
+var envHosts = GetEnvString("HOST");
+if (!String.IsNullOrEmpty(envHosts))
+{
+    hosts.AddRange(envHosts.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+}
 var clients = new Dictionary<string, EiscpClient>();
-bool debug = false;
+bool debug = GetEnvBool("DEBUG", false);
 var subscriptions = new List<MqttTopicFilter>();
 var options = new OptionSet
 {
@@ -40,7 +46,7 @@ catch (OptionException ex)
     Console.Error.WriteLine("Try 'eiscp2mqtt --help' for more information");
     return;
 }
-if (showHelp || mqttHost is null || hosts.Count == 0)
+if (showHelp || String.IsNullOrEmpty(mqttHost) || hosts.Count == 0)
 {
     options.WriteOptionDescriptions(Console.Out);
     return;
@@ -80,6 +86,22 @@ using (var cts = new CancellationTokenSource())
         mqttClient.ApplicationMessageReceivedAsync += x=>MqttMessageReceived(x, cts.Token);
         await RunConnectionsAsync(mqttClient, cts.Token);
     }
+}
+
+static string GetEnvString(string name, string defaultValue = "")
+{
+    var value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+    if (value is null) return defaultValue;
+    return value;
+}
+
+static bool GetEnvBool(string name, bool defaultValue = default)
+{
+    var value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+    if (value is null) return defaultValue;
+    var parsed = new BooleanConverter().ConvertFromString(value);
+    if (parsed is null) return defaultValue;
+    return (bool)parsed;
 }
 
 Task RunConnectionsAsync(IMqttClient mqttClient, CancellationToken cancellationToken)
