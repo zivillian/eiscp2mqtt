@@ -5,8 +5,7 @@ using eiscp;
 using Mono.Options;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Options;
-using MQTTnet.Client.Subscribing;
+using MQTTnet.Packets;
 
 string mqttHost = null;
 string mqttUsername = null;
@@ -63,7 +62,7 @@ using (var cts = new CancellationTokenSource())
             mqttOptionBuilder = mqttOptionBuilder.WithCredentials(mqttUsername, mqttPassword);
         }
         var mqttOptions = mqttOptionBuilder.Build();
-        mqttClient.UseDisconnectedHandler(async e =>
+        mqttClient.DisconnectedAsync += async e =>
         {
             Console.Error.WriteLine("mqtt disconnected - reconnecting in 5 seconds");
             await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
@@ -76,9 +75,9 @@ using (var cts = new CancellationTokenSource())
             {
                 Console.Error.WriteLine("reconnect failed");
             }
-        });
+        };
         await mqttClient.ConnectAsync(mqttOptions, cts.Token);
-        mqttClient.UseApplicationMessageReceivedHandler(x=>MqttMessageReceived(x, cts.Token));
+        mqttClient.ApplicationMessageReceivedAsync += x=>MqttMessageReceived(x, cts.Token);
         await RunConnectionsAsync(mqttClient, cts.Token);
     }
 }
