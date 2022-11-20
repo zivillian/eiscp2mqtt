@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 
 namespace eiscp;
 
-/// <summary>
-/// TODO
-/// </summary>
 public class RawClient:IDisposable
 {
     private readonly string _hostname;
@@ -36,9 +33,6 @@ public class RawClient:IDisposable
         return _client.ConnectAsync(_hostname, 60128, cancellationToken);
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var fillTask = FillPipeAsync(_pipe.Writer, cancellationToken);
@@ -75,9 +69,6 @@ public class RawClient:IDisposable
         }
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     public void Disconnect()
     {
         _pipe.Writer.Complete();
@@ -193,9 +184,6 @@ public class RawClient:IDisposable
         return command;
     }
 
-    /// <summary>
-    /// TODO
-    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
